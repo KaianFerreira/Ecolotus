@@ -5,7 +5,6 @@ export default [
   },
   {
     path: '/',
-    name: 'Home',
     component: () => import (/* webpackChunkName: "main" */ '../components/Home.vue'),
     children: [
       {

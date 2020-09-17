@@ -1,87 +1,78 @@
 <template>
-  <section class="container d-flex justify-center">
-    <div class="content">
-      <v-text-field
-        class="mx-4 search-input"
-        flat
-        hide-details
-        label="Search"
-        solo-inverted
-        v-model="search"
-      ></v-text-field>
-      <div class="cards">
-        <v-row class="card"
-          v-for="(card, i) in filteredItems" :key="i"
-        >
-          <v-col>
-            <v-card
-              color="teal"
-              dark
-            >
-              <v-card-title class="headline">{{card.title}}</v-card-title>
-
-              <v-card-subtitle>{{ card.subtitle }}</v-card-subtitle>
-              
-              <v-card-text>{{ card.text }}</v-card-text>
-            <v-divider></v-divider>
-              <v-card-actions>
-                <v-list-item class="grow">
-                  <v-list-item-avatar color="grey darken-">
-                    <v-img
-                      :src="card.userPhoto ? card.userPhoto : 'https://randomuser.me/api/portraits/men/85.jpg'"
-                    ></v-img>
-                  </v-list-item-avatar>
-                  <v-list-item-content>
-                    <v-list-item-title>{{ card.user }}</v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-card-actions>
-            </v-card>
-          </v-col>
-        </v-row>
+  <section>
+    <div class="menu grow d-flex justify-space-between align-center">
+      <div class="title pointer" @click="$router.push('/')">ECOLOTUS</div>
+      <div class="actions pointer" @click="drawer = !drawer">
+        <v-icon color="white" large>mdi-menu</v-icon>
       </div>
     </div>
+    <v-navigation-drawer
+      v-model="drawer"
+      absolute
+      temporary
+    >
+      <v-list-item>
+        <v-list-item-avatar>
+          <v-img src="https://randomuser.me/api/portraits/men/78.jpg"></v-img>
+        </v-list-item-avatar>
+
+        <v-list-item-content>
+          <v-list-item-title>John Leider</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+
+      <v-divider></v-divider>
+
+      <v-list dense>
+
+        <v-list-item
+          v-for="item in items"
+          :key="item.title"
+          link
+        >
+          <v-list-item-icon>
+            <v-icon>{{ item.icon }}</v-icon>
+          </v-list-item-icon>
+
+          <v-list-item-content>
+            <v-list-item-title>{{ item.title }}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+    </v-navigation-drawer>
+    <router-view></router-view>
   </section>
 </template>
 
 <script>
- import { getAllAssigned } from '../../api/note'
   export default {
-    computed: {
-      filteredItems () {
-        return this.cards.filter(x => Object.keys(x).some(key => String(x[key]).toUpperCase().includes(this.search.toUpperCase())))
-      }
-    },
     data () {
       return {
-        search: '',
-        cards: []
+        drawer: true,
+        items: [
+          {
+            title: 'teste',
+            icon: 'mdi-home'
+          }
+        ]
       }
-    },
-    async mounted () {
-      this.cards = await getAllAssigned ()
     }
   }
 </script>
 <style lang="scss" scoped>
-  .content {
+  .menu {
+    padding: 0 16px;
     width: 100%;
+    height: 70px;
+    background: rgb(57,192,184);
+    background: linear-gradient(90deg, rgba(57,192,184,1) 0%, rgba(123,209,108,1) 100%);
+    .title {
+      font-family: 'dosis' !important;
+      font-size: 24px !important;
+      color: white;
+    }
   }
-  .search-input {
-    margin: 12px 0px !important;
-    margin-bottom: 12px;
-  }
-  @media screen and (min-width: 768px) {
-    .content {
-      width: 80vw !important;
-    }
-    .cards {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .card {
-      width: 90%;
-    }
+  .pointer {
+    cursor: pointer;
   }
 </style>

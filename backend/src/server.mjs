@@ -7,7 +7,7 @@ dotenv.config()
 // Routes
 
 import auth from './routes/config/auth/routes.mjs'
-import note from './routes/note/routes.mjs'
+import post from './routes/post/routes.mjs'
 import user from './routes/user/routes.mjs'
 
 console.log(`[${new Date().toLocaleString('pt-br')} Starting Icarus]`)
@@ -21,7 +21,7 @@ const router = express.Router()
 
 //routes
 router.use('/auth', auth)
-router.use('/note', note)
+router.use('/post', post)
 router.use('/user', user)
 app.use('/', router)
 
