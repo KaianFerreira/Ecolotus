@@ -10,7 +10,7 @@ import auth from './routes/config/auth/routes.mjs'
 import post from './routes/post/routes.mjs'
 import user from './routes/user/routes.mjs'
 
-console.log(`[${new Date().toLocaleString('pt-br')} Starting Icarus]`)
+console.log(`[${new Date().toLocaleString('pt-br')} Starting Ecolotus]`)
 const app = express()
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))

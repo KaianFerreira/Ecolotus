@@ -28,7 +28,6 @@ const create = async (
   name,
   fullName,
   registerNumber,
-  birthDate,
   role = 'user',
   active
 ) => {
@@ -45,8 +44,7 @@ const create = async (
       user: user[0].id,
       name,
       fullName,
-      registerNumber,
-      birthDate
+      registerNumber
     })
     return user[0].id
   })

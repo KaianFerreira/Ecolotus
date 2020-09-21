@@ -20,9 +20,10 @@ export default [
         props: true
       },
       {
-        path: 'me',
+        path: 'me/:mode',
         name: 'User',
-        component: () => import (/* webpackChunkName: "main" */ '../components/User.vue')
+        component: () => import (/* webpackChunkName: "main" */ '../components/User.vue'),
+        props: true
       }
     ]
   }

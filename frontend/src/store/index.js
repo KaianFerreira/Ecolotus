@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import { setToken, removeToken } from '../libs/token'
-import router from '../router'
 import { get as getUser } from '../api/user'
 
 Vue.use(Vuex)
@@ -33,7 +32,6 @@ export default new Vuex.Store({
     signOut (store) {
       store.commit('user', null)
       removeToken()
-      router.replace('/')
       store.dispatch('loaded')
     },
 

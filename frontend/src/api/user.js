@@ -5,6 +5,29 @@ const get = async (id) => {
   return data
 }
 
+const create = async (
+  name,
+  fullName,
+  registerNumber,
+  role,
+  photo = null,
+  active,
+  login,
+  password
+) => {
+  const formData = new FormData()
+  if (photo) formData.append('photo', photo)
+  if (name) formData.append('name', name)
+  if (fullName) formData.append('fullName', fullName)
+  if (registerNumber) formData.append('registerNumber', registerNumber)
+  if (role) formData.append('role', role)
+  if (active) formData.append('active', active)
+  if (login) formData.append('login', login)
+  if (password) formData.append('password', password)
+  const { data } = await api.post(`user`, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+  return data
+}
+
 const update = async (
   id,
   name,
@@ -40,6 +63,7 @@ const remove = async (id) => {
 
 export {
   get,
+  create,
   update,
   remove,
 }

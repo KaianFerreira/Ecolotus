@@ -74,7 +74,6 @@ router.post('/', upload.single('photo'), async (req, res) => {
       name: Joi.string().required(),
       fullName: Joi.string().required(),
       registerNumber: Joi.string().required(),
-      birthDate: Joi.date().allow(null),
       role: Joi.string().allow(null),
       photo: Joi.any().allow(null),
       active: Joi.boolean().required()
@@ -87,7 +86,6 @@ router.post('/', upload.single('photo'), async (req, res) => {
       value.name,
       value.fullName,
       value.registerNumber,
-      value.birthDate,
       value.role,
       value.active
     )
@@ -123,7 +121,6 @@ router.put('/:id', requireAuth('user'), upload.single('photo'), async (req, res)
       name: Joi.string().required(),
       fullName: Joi.string().required(),
       registerNumber: Joi.string().required(),
-      birthDate: Joi.date().allow(null),
       role: Joi.string().empty('').allow(null),
       photo: Joi.any().allow(null),
       active: Joi.boolean().required()
@@ -142,7 +139,6 @@ router.put('/:id', requireAuth('user'), upload.single('photo'), async (req, res)
       body.value.name,
       body.value.fullName,
       body.value.registerNumber,
-      body.value.birthDate,
       body.value.role,
       body.value.active
     )

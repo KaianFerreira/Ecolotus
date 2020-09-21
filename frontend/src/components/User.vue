@@ -1,6 +1,6 @@
 <template>
   <section class="container d-flex justify-center">
-    <div class="content">
+    <div class="content" v-if="loaded">
       <v-row>
         <v-col>
           <v-card >
@@ -8,8 +8,8 @@
               <v-form class="d-flex justify-center">
                 <div>
                   <v-row>
-                    <v-col class="d-flex align-center">
-                      <div @click="changeImage" class="image-upload teal">
+                    <v-col class="d-flex align-center" v-if="mode === 'view' || mode === 'register'">
+                      <div @click="changeImage" class="image-upload">
                         <img v-if="photo" :src="photo"/>
                         <input ref="fileUpload" type="file" accept="image/jpeg" @change="uploadImage($event.target.files[0])">
                       </div>
@@ -23,6 +23,7 @@
                         :readonly="loading"
                         :error-messages="errors.indexOf('login') > - 1 ?
                           ['Insira um login'] : errors.indexOf('exists') > - 1 ? ['Usuário existente'] : []"
+                        :error="errors === 'invalidCredentials'"
                       ></v-text-field>
                       <v-text-field
                         id="password"
@@ -31,11 +32,17 @@
                         type="password"
                         v-model="password"
                         :readonly="loading"
-                        :error-messages="errors.indexOf('password') > - 1 ? ['Insira uma senha'] : []"
+                        :error-messages="errors.indexOf('password') > - 1 ?
+                          ['Insira uma senha'] : []"
+                        :error="errors === 'invalidCredentials'"
                       ></v-text-field>
+                      <v-input
+                        :error-messages="errors === 'invalidCredentials' ? 
+                          ['Login ou senha não conhecidem'] : errors"
+                      ></v-input>
                     </v-col>
                   </v-row>
-                  <v-row>
+                  <v-row v-if="mode === 'view' || mode === 'register'">
                     <v-col>
                       <v-text-field
                         label="Nome"
@@ -59,7 +66,7 @@
                       ></v-text-field>
                     </v-col>
                   </v-row>
-                  <v-row>
+                  <v-row v-if="mode === 'view' || mode === 'register'">
                     <v-col>
                       <v-text-field
                         label="CPF"
@@ -72,25 +79,26 @@
                           ['CPF inválido'] : []"
                       ></v-text-field>
                     </v-col>
-                    <v-col>
-                      <v-text-field
-                        label="Data de nascimento"
-                        name="birthDate"
-                        type="date"
-                        v-model="birthDate"
-                        :readonly="loading"
-                        :error-messages="errors.indexOf('birthDate') > 1 ? 
-                          ['Data de nascimento inválida'] : []"
-                      ></v-text-field>
-                    </v-col>
                   </v-row>                    
                 </div>
               </v-form>
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn :disabled="loading" outlined color="secondary" @click="cancel">Cancelar</v-btn>
-              <v-btn :loading="loading" @click="save" color="primary">Alterar</v-btn>
+              <v-btn :disabled="loading" outlined color="secondary" @click="cancel">
+                {{
+                  mode === 'view' ? 
+                    'Cancelar' : mode === 'login' ?
+                    'Cadastrar-se' : 'voltar'
+                }}
+              </v-btn>
+              <v-btn :loading="loading" @click="save" color="rgb(57,192,184)">
+                {{ 
+                  mode === 'view' ?
+                    'Alterar' : mode === 'register' ?
+                    'Confirmar' : 'Entrar'
+                }}
+              </v-btn>
             </v-card-actions>
           </v-card>
         </v-col>
@@ -102,8 +110,10 @@
 <script>
 import { mapState } from 'vuex'
 import { uploadImage } from '../tools'
-import { get, update } from '../api/user'
+import { get, create, update } from '../api/user'
+import { signIn } from '../api/auth'
   export default {
+    props: ['mode'],
     data () {
       return {
         login: null,
@@ -111,7 +121,6 @@ import { get, update } from '../api/user'
         name: null,
         fullName: null,
         registerNumber: null,
-        birthDate: null,
         loading: true,
         photo: null,
         imageFile: null,
@@ -119,7 +128,7 @@ import { get, update } from '../api/user'
       }
     },
     computed: {
-      ...mapState(['user'])
+      ...mapState(['user', 'loaded'])
     },
     async mounted () {
       await this.getData()
@@ -127,37 +136,72 @@ import { get, update } from '../api/user'
     methods: {
       async getData () {
         this.loading = true
-        const data = await get(this.user.user)
-        this.login = data.userLogin
-        this.name = data.name
-        this.fullName = data.fullName
-        this.photo = data.photo
-        this.registerNumber = data.registerNumber
-        this.birthDate = new Date(data.birthDate).toISOString().split('T')[0]
+
+        if (this.mode === 'view') {
+          const data = await get(this.user.user)
+          this.login = data.userLogin
+          this.name = data.name
+          this.fullName = data.fullName
+          this.photo = data.photo
+          this.registerNumber = data.registerNumber
+          this.birthDate = new Date(data.birthDate).toISOString().split('T')[0]
+        }
+
         this.loading = false
       },
       async save () {
         this.loading = true
-        await update(
-          this.user.id,
-          this.name,
-          this.fullName,
-          this.registerNumber,
-          this.birthDate,
-          'user',
-          this.imageFile,
-          true,
-          this.login,
-          this.password
-        )
+        if (this.mode === 'view') {
+          await update(
+            this.user.id,
+            this.name,
+            this.fullName,
+            this.registerNumber,
+            'user',
+            this.imageFile,
+            true,
+            this.login,
+            this.password
+          )
+        }
+
+        if (this.mode === 'register') {
+          await create(
+            this.name,
+            this.fullName,
+            this.registerNumber,
+            'user',
+            this.imageFile,
+            true,
+            this.login,
+            this.password
+          )
+        } 
+
+        if (this.mode === 'login') {
+          try {
+            const data = await signIn(this.login, this.password)
+            this.$store.dispatch('signIn', data)
+            this.$router.push('/')
+          } catch (error) {
+            const data = error.response ? error.response.data : {}
+            if (data.error === 'Invalid login or password') {
+              this.errors = 'invalidCredentials'
+            } else {
+              this.errors = 'Internal error'
+            }
+            console.error(error)
+          }
+        }
+
         this.loading = false
         this.$forceUpdate()
       },
       async cancel () {
-        await this.getData()
+        if (this.mode === 'login') this.$router.push('/me/register')
+        else this.$router.push('/')
       },
       changeImage () {
-        console.log('here')
         this.$refs.fileUpload.click()
       },
       uploadImage (file) {
@@ -174,6 +218,7 @@ import { get, update } from '../api/user'
 </script>
 <style lang="scss" scoped>
   .image-upload {
+    background: linear-gradient(90deg, rgba(57,192,184,1) 0%, rgba(123,209,108,1) 100%);
     position: relative;
     width: 100px;
     height: 100px;
