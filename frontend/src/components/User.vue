@@ -38,7 +38,7 @@
                       ></v-text-field>
                       <v-input
                         :error-messages="errors === 'invalidCredentials' ? 
-                          ['Login ou senha não conhecidem'] : errors"
+                          ['Login ou senha não conhecidem'] : mode === 'view' ? errors : ''"
                       ></v-input>
                     </v-col>
                   </v-row>
@@ -144,58 +144,56 @@ import { signIn } from '../api/auth'
           this.fullName = data.fullName
           this.photo = data.photo
           this.registerNumber = data.registerNumber
-          this.birthDate = new Date(data.birthDate).toISOString().split('T')[0]
         }
 
         this.loading = false
       },
       async save () {
-        this.loading = true
-        if (this.mode === 'view') {
-          await update(
-            this.user.id,
-            this.name,
-            this.fullName,
-            this.registerNumber,
-            'user',
-            this.imageFile,
-            true,
-            this.login,
-            this.password
-          )
-        }
-
-        if (this.mode === 'register') {
-          await create(
-            this.name,
-            this.fullName,
-            this.registerNumber,
-            'user',
-            this.imageFile,
-            true,
-            this.login,
-            this.password
-          )
-        } 
-
-        if (this.mode === 'login') {
-          try {
+        try {
+          this.errors = []
+          this.loading = true
+          if (this.mode === 'view') {
+            await update(
+              this.user.id,
+              this.name,
+              this.fullName,
+              this.registerNumber,
+              'user',
+              this.imageFile,
+              true,
+              this.login,
+              this.password
+            )
+          }
+  
+          if (this.mode === 'register') {
+            await create(
+              this.name,
+              this.fullName,
+              this.registerNumber,
+              'user',
+              this.imageFile,
+              true,
+              this.login,
+              this.password
+            )
+          } 
+  
+          if (this.mode === 'login') {
             const data = await signIn(this.login, this.password)
             this.$store.dispatch('signIn', data)
             this.$router.push('/')
-          } catch (error) {
-            const data = error.response ? error.response.data : {}
-            if (data.error === 'Invalid login or password') {
-              this.errors = 'invalidCredentials'
-            } else {
-              this.errors = 'Internal error'
-            }
-            console.error(error)
           }
+  
+          this.loading = false
+          this.$forceUpdate()
+        } catch (error) {
+          const data = error.response ? error.response.data : {}
+          if (data.error === 'Validation error') this.errors = data.fields
+          else if (data.error === 'User already exists') this.errors = ['exists']
+          else this.errors = 'Internal error'
         }
-
         this.loading = false
-        this.$forceUpdate()
       },
       async cancel () {
         if (this.mode === 'login') this.$router.push('/me/register')

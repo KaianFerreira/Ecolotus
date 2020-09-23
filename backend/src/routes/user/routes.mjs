@@ -19,15 +19,15 @@ const upload = multer({ dest: `${process.env.FOLDER_DATA}/tmp`})
 const uploadPhoto = (file, id) => {
   if (file) {
     // If folder does not exists
-    if (!fs.existsSync(`${process.env.FOLDER_DATA}/${id}`)) {
-      fs.mkdirSync(`${process.env.FOLDER_DATA}/${id}`, { recursive: true })
+    if (!fs.existsSync(`${process.env.FOLDER_DATA}/user/${id}`)) {
+      fs.mkdirSync(`${process.env.FOLDER_DATA}/user/${id}`, { recursive: true })
     }
     // If photo exists
-    if (fs.existsSync(`${process.env.FOLDER_DATA}/${id}/profile.jpg`)) {
-      fs.unlinkSync(`${process.env.FOLDER_DATA}/${id}/profile.jpg`)
+    if (fs.existsSync(`${process.env.FOLDER_DATA}/user/${id}/profile.jpg`)) {
+      fs.unlinkSync(`${process.env.FOLDER_DATA}/user/${id}/profile.jpg`)
     }
-    // Copy temp image to business folder
-    fs.copyFileSync(`${process.env.FOLDER_DATA}/tmp/${file.filename}`, `${process.env.FOLDER_DATA}/${id}/profile.jpg`)
+    // Copy temp image to user folder
+    fs.copyFileSync(`${process.env.FOLDER_DATA}/tmp/${file.filename}`, `${process.env.FOLDER_DATA}/user/${id}/profile.jpg`)
     fs.unlinkSync(`${process.env.FOLDER_DATA}/tmp/${file.filename}`)
   }
 }
@@ -80,6 +80,10 @@ router.post('/', upload.single('photo'), async (req, res) => {
     })
     // Validate request
     const { value, error } = schema.validate(req.body)
+    if (error) {
+      console.log(error.details[0].message)
+      return res.status(400).send({ error: 'Validation error', fields: [...error.details.map(x => x.path[0])] })
+    }
     const user = await create(
       value.login,
       value.password,
@@ -89,12 +93,8 @@ router.post('/', upload.single('photo'), async (req, res) => {
       value.role,
       value.active
     )
-    uploadPhoto(req.photo, user)
+    uploadPhoto(req.file, user)
     await updatePhoto (req.file ? `${process.env.API_DATA}/user/${user}/profile.jpg` : null, user)
-    if (error) {
-      console.log(error.details[0].message)
-      return res.status(400).send({ error: 'Validation error', fields: [...error.details.map(x => x.path[0])] })
-    }
     res.send(true)
   } catch (error) {
     console.error(error)
@@ -143,7 +143,7 @@ router.put('/:id', requireAuth('user'), upload.single('photo'), async (req, res)
       body.value.active
     )
     uploadPhoto(req.file, user)
-    await updatePhoto (req.file ? `${process.env.API_DATA}/${user}/profile.jpg` : null, user)
+    await updatePhoto (req.file ? `${process.env.API_DATA}/user/${user}/profile.jpg` : null, user)
     res.send(true)
   } catch (error) {
     console.error(error)

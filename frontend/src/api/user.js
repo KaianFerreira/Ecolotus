@@ -33,7 +33,6 @@ const update = async (
   name,
   fullName,
   registerNumber,
-  birthDate,
   role,
   photo = null,
   active,
@@ -45,7 +44,6 @@ const update = async (
   if (name) formData.append('name', name)
   if (fullName) formData.append('fullName', fullName)
   if (registerNumber) formData.append('registerNumber', registerNumber)
-  if (birthDate) formData.append('birthDate', birthDate)
   if (role) formData.append('role', role)
   if (active) formData.append('active', active)
   if (login) formData.append('login', login)

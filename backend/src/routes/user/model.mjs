@@ -57,7 +57,6 @@ const update = async (
   name,
   fullName,
   registerNumber,
-  birthDate,
   role = 'user',
   active
   ) => {
@@ -66,7 +65,6 @@ const update = async (
         name,
       fullName,
       registerNumber,
-      birthDate,
     }).where('id', id)
     .returning(['id', 'user'])
     if (password) {

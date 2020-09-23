@@ -14,11 +14,11 @@
     >
       <v-list-item v-if="user">
         <v-list-item-avatar>
-          <v-img src="https://randomuser.me/api/portraits/men/78.jpg"></v-img>
+          <v-img :src="user.photo"></v-img>
         </v-list-item-avatar>
 
         <v-list-item-content>
-          <v-list-item-title>John Leider</v-list-item-title>
+          <v-list-item-title>{{user.name + ' ' +user.fullName}}</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
       <div class="pa-2" v-else>
@@ -31,6 +31,7 @@
           v-for="item in items"
           :key="item.title"
           link
+          @click="$router.push(item.path)"
         >
           <v-list-item-icon>
             <v-icon>{{ item.icon }}</v-icon>
@@ -55,15 +56,18 @@ import { mapState } from 'vuex'
         items: [
           {
             title: 'Home',
-            icon: 'mdi-home'
+            icon: 'mdi-home',
+            path: '/',
           },
           {
             title: 'Perfil',
-            icon: 'mdi-account-circle'
+            icon: 'mdi-account-circle',
+            path: '/me/view'
           },
           {
             title: 'Criar publicação',
-            icon: 'mdi-plus'
+            icon: 'mdi-plus',
+            path: '/post'
           }
         ]
       }
