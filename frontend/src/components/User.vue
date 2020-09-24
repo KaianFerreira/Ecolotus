@@ -78,6 +78,10 @@
                         :error-messages="errors.indexOf('registerNumber') > - 1 ? 
                           ['CPF inválido'] : []"
                       ></v-text-field>
+                      <v-input
+                        :error-messages="errors === 'Internal error' ? 
+                          'Ocorreu um erro interno' : '' "
+                      ></v-input>
                     </v-col>
                   </v-row>                    
                 </div>
@@ -177,15 +181,17 @@ import { signIn } from '../api/auth'
               this.login,
               this.password
             )
+            const data = await signIn(this.login, this.password)
+            this.$store.dispatch('signIn', data)
           } 
   
           if (this.mode === 'login') {
             const data = await signIn(this.login, this.password)
             this.$store.dispatch('signIn', data)
-            this.$router.push('/')
           }
   
           this.loading = false
+          this.$router.push('/')
           this.$forceUpdate()
         } catch (error) {
           const data = error.response ? error.response.data : {}
