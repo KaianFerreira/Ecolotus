@@ -84,6 +84,7 @@ router.post('/', upload.single('photo'), async (req, res) => {
       console.log(error.details[0].message)
       return res.status(400).send({ error: 'Validation error', fields: [...error.details.map(x => x.path[0])] })
     }
+
     const user = await create(
       value.login,
       value.password,
@@ -93,8 +94,12 @@ router.post('/', upload.single('photo'), async (req, res) => {
       value.role,
       value.active
     )
-    uploadPhoto(req.file, user)
-    await updatePhoto (req.file ? `${process.env.API_DATA}/user/${user}/profile.jpg` : null, user)
+
+    if (value.photo) {
+      uploadPhoto(req.file, user)
+      await updatePhoto (req.file ? `${process.env.API_DATA}/user/${user}/profile.jpg` : null, user)
+    }
+
     res.send(true)
   } catch (error) {
     console.error(error)
@@ -131,6 +136,7 @@ router.put('/:id', requireAuth('user'), upload.single('photo'), async (req, res)
       console.log(body.error.details[0].message)
       return res.status(400).send({ error: 'Validation error', fields: [...body.error.details.map(x => x.path[0])]})
     }
+
     // Validate request
     const user = await update(
       params.value.id,
@@ -142,8 +148,12 @@ router.put('/:id', requireAuth('user'), upload.single('photo'), async (req, res)
       body.value.role,
       body.value.active
     )
-    uploadPhoto(req.file, user)
-    await updatePhoto (req.file ? `${process.env.API_DATA}/user/${user}/profile.jpg` : null, user)
+
+    if (body.value.photo) {
+      uploadPhoto(req.file, user)
+      await updatePhoto (req.file ? `${process.env.API_DATA}/user/${user}/profile.jpg` : null, user)
+    }
+
     res.send(true)
   } catch (error) {
     console.error(error)

@@ -3,20 +3,20 @@
     <div class="content">
       <div class="search d-flex align-center">
         <div class="d-flex flex-grow-1">
-          <input type="text" placeholder="Pesquisar" class="">
+          <input type="text" placeholder="Pesquisar" v-model="search" class="">
           <div class="search-button d-flex align-center justify-center">
             <v-icon color="white">mdi-magnify</v-icon>
           </div>
         </div>
       </div>
       <div class="cards d-flex justify-center flex-wrap">
-        <div class="card" v-for="(post, i) in posts" :key="i">
-          <v-img eager src="https://picsum.photos/510/300?random" class="image" aspect-ratio="1.7"></v-img>
-          <div class="content">
+        <div class="card" @click="$router.push(`/post/${post.id}`)" v-for="(post, i) in filteredPosts" :key="i">
+          <v-img eager :src="post.photo" class="image" aspect-ratio="1.7"></v-img>
+          <div class="content d-flex flex-column justify-space-between">
             <div class="content-wrapper">
               <div class="user d-flex">
                 <v-avatar color="orange" class="avatar" size="50">
-                  <span class="white--text headline">62</span>
+                  <v-img :src="post.userPhoto"></v-img>
                 </v-avatar>
                 <div class="user-info d-flex flex-column">
                   <span>{{ post.user }}</span>
@@ -27,7 +27,7 @@
                   {{ post.title }}
                 </div>
                 <div class="text">
-                  {{ post.subTitle }}
+                  {{ post.subtitle }}
                 </div>
               </div>
             </div>
@@ -44,46 +44,20 @@
 </template>
 
 <script>
+import { getAll } from '../api/post'
   export default {
     data () {
       return {
-        posts: [
-          {
-            img: 'https://picsum.photos/510/300?random',
-            user: 'Herica borgers',
-            publishDate: 'Setembro 15, 2020',
-            title: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt',
-            subTitle: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua,'
-          },
-          {
-            img: 'https://picsum.photos/510/300?random',
-            user: 'Herica borgers',
-            publishDate: 'Setembro 15, 2020',
-            title: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt',
-            subTitle: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua,'
-          },
-          {
-            img: 'https://picsum.photos/510/300?random',
-            user: 'Herica borgers',
-            publishDate: 'Setembro 15, 2020',
-            title: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt',
-            subTitle: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua,'
-          },
-          {
-            img: 'https://picsum.photos/510/300?random',
-            user: 'Herica borgers',
-            publishDate: 'Setembro 15, 2020',
-            title: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt',
-            subTitle: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua,'
-          },
-          {
-            img: 'https://picsum.photos/510/300?random',
-            user: 'Herica borgers',
-            publishDate: 'Setembro 15, 2020',
-            title: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt',
-            subTitle: 'magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua,'
-          }
-        ]
+        posts: [],
+        search: ''
+      }
+    },
+    async mounted () {
+      this.posts = await getAll()
+    },
+    computed: {
+      filteredPosts () {
+        return this.posts.filter(x => Object.keys(x).some(key => String(x[key]).toUpperCase().includes(this.search.toUpperCase())))
       }
     }
   }
@@ -113,13 +87,20 @@
     }
   }
   .card {
+    cursor: pointer;
     box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.25);
     border-radius: 3px;
     width: 90%;
+    margin-bottom: 20px;
     .image {
       border-top-right-radius: 6px !important;
       border-top-left-radius: 6px !important;
       height: 152px;
+    }
+    .text {
+      max-height: 98px;
+      text-overflow: ellipsis;
+      overflow: hidden;
     }
 
     .user {
@@ -161,6 +142,11 @@
     .card {
       margin: 10px;
       max-width: 320px !important;
+      .text {
+        max-height: 98px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
     }
   }
 </style>

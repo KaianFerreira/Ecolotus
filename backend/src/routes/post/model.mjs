@@ -8,6 +8,7 @@ const getAll = async () => {
       'post.title',
       'post.subtitle',
       'post.text',
+      'post.publishDate as publishDate',
       'post.photo',
       'user_details.name as user',
       'user_details.photo as userPhoto'
@@ -23,9 +24,20 @@ const updatePhoto = async(path, id) => {
 }
 
 const get = async (id) => {
-  console.log(id)
   return knex('post')
-    .where('id', id)
+    .leftJoin('user_details', 'user_details.user', 'post.user')
+    .select(
+      'post.id',
+      'post.title',
+      'post.subtitle',
+      'post.text',
+      'post.publishDate',
+      'post.photo',
+      'user_details.user as userId',
+      'user_details.name as user',
+      'user_details.photo as userPhoto'
+    )
+    .where('post.id', id)
     .first()
 
 }
@@ -46,20 +58,32 @@ const getUser = async (user) => {
     .where('post.user', user)
 }
 
-const create = (post) => {
+const create = (
+  title,
+  subtitle,
+  text,
+  publishDate,
+  user,
+) => {
   return knex('post').insert({
-    title: post.title,
-    subtitle: post.subtitle,
-    text: post.text,
-    user: post.user
+    title,
+    subtitle,
+    text,
+    user,
+    publishDate
   }).returning(['id', 'title'])
 }
 
-const update = (id, post) => {
+const update = (
+  id,
+  title,
+  subtitle,
+  text,
+) => {
   return knex('post').update({
-    title: post.title,
-    subtitle: post.subtitle,
-    text: post.text
+    title,
+    subtitle,
+    text
   }).where('id', id)
   .returning(['id', 'title'])
 }

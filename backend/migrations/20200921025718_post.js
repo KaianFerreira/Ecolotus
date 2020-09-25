@@ -2,7 +2,7 @@
 exports.up = function(knex) {
   return Promise.all([
     knex.schema.alterTable('post', table => {
-      table.date('publishDate').comment('Data de publicação')
+      table.string('publish_date').comment('Data de publicação')
     })
   ])
 }
@@ -10,7 +10,7 @@ exports.up = function(knex) {
 exports.down = function(knex) {
   return Promise.all([
     knex.schema.alterTable('post', table => {
-      table.dropColumn('publishDate')
+      table.dropColumn('publish_date')
     })
   ])
 }

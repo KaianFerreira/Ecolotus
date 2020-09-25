@@ -42,6 +42,11 @@
           </v-list-item-content>
         </v-list-item>
       </v-list>
+      <template v-slot:append v-if="user">
+        <div class="pa-2">
+          <v-btn block @click="$store.dispatch('signOut')">Logout</v-btn>
+        </div>
+      </template>
     </v-navigation-drawer>
     <router-view class="router-view" style="margin-top: 70px"></router-view>
   </section>
@@ -67,7 +72,7 @@ import { mapState } from 'vuex'
           {
             title: 'Criar publicação',
             icon: 'mdi-plus',
-            path: '/post'
+            path: '/post/new'
           }
         ]
       }
@@ -84,7 +89,6 @@ import { mapState } from 'vuex'
     padding: 0 16px;
     width: 100%;
     height: 70px;
-    background: rgb(57,192,184);
     background: linear-gradient(90deg, rgba(57,192,184,1) 0%, rgba(123,209,108,1) 100%);
     .title {
       font-family: 'dosis' !important;

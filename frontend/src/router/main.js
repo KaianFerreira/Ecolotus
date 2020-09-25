@@ -14,7 +14,7 @@ export default [
         props: true
       },
       {
-        path: 'post',
+        path: 'post/:id',
         name: 'post',
         component: () => import (/* webpackChunkName: "main" */ '../components/Post.vue'),
         props: true

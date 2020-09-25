@@ -15,13 +15,36 @@ const get = async (id) => {
   return data
 }
 
-const create = async (post) => {
-  const { data } = await api.post('post', post)
+const create = async (
+  publishDate,
+  title,
+  subTitle,
+  text,
+  photo
+) => {
+  const formData = new FormData()
+  if (publishDate) formData.append('publishDate', publishDate)
+  if (title) formData.append('title', title)
+  if (subTitle) formData.append('subTitle', subTitle)
+  if (text) formData.append('text', text)
+  if (photo) formData.append('photo', photo)
+  const { data } = await api.post(`post`, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
   return data
 }
 
-const update = async (id, post) => {
-  const { data } = await api.put(`post/${id}`, post)
+const update = async (
+  id,
+  title,
+  subTitle,
+  text,
+  photo
+) => {
+  const formData = new FormData()
+  if (title) formData.append('title', title)
+  if (subTitle) formData.append('subTitle', subTitle)
+  if (text) formData.append('text', text)
+  if (photo) formData.append('photo', photo)
+  const { data } = await api.put(`post/${id}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
   return data
 }
 
@@ -33,7 +56,6 @@ const remove = async (id) => {
 
 export {
   getAll,
-  getAllAssigned,
   getUserposts,
   get,
   create,

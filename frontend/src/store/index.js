@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import { setToken, removeToken } from '../libs/token'
+import { get as getUserAtt } from '../api/auth'
 import { get as getUser } from '../api/user'
 
 Vue.use(Vuex)
@@ -34,6 +35,13 @@ export default new Vuex.Store({
       removeToken()
       store.dispatch('loaded')
     },
+    async update (store) {
+      store.commit('loaded', false)
+      const user = await getUserAtt()
+      const userDetails = await getUser(user.user.id)
+      store.commit('user', userDetails)
+      store.commit('loaded', true)
+    }
 
   }
 })

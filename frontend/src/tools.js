@@ -34,7 +34,7 @@ const uploadImage = (file, image, imageFile, maxWidth, maxHeight) => {
       canvas.width = width
       canvas.height = height
       canvas.getContext('2d').drawImage(img, 0, 0, width, height)
-      const dataUrl = canvas.toDataURL('image/jpeg', 0.90)
+      const dataUrl = canvas.toDataURL('image/jpeg', 1)
       image(dataUrl)
       const binStr = atob(dataUrl.split(',')[1])
       const arr = new Uint8Array(binStr.length).map((x, i) => binStr.charCodeAt(i))

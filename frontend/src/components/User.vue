@@ -168,6 +168,7 @@ import { signIn } from '../api/auth'
               this.login,
               this.password
             )
+            this.$store.dispatch('update')
           }
   
           if (this.mode === 'register') {
