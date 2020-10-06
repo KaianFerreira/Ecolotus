@@ -1,5 +1,10 @@
 import api from '../libs/api'
 
+const getAll = async () => {
+  const { data } = await api.get('user')
+  return data
+}
+
 const get = async (id) => {
   const { data } = await api.get(`user/${id}`)
   return data
@@ -60,6 +65,7 @@ const remove = async (id) => {
 
 
 export {
+  getAll,
   get,
   create,
   update,

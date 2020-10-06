@@ -1,7 +1,7 @@
 <template>
   <section class="container d-flex justify-center">
     <div class="content">
-      <div class="title">Publicações</div>
+       <div class="title">Usuários</div>
       <div class="search d-flex align-center">
         <div class="d-flex flex-grow-1">
           <input type="text" placeholder="Pesquisar" v-model="search" class="">
@@ -10,66 +10,37 @@
           </div>
         </div>
       </div>
-      <div class="cards d-flex justify-center flex-wrap">
-        <div class="card" @click="$router.push(`/post/${post.id}`)" v-for="(post, i) in filteredPosts" :key="i">
-          <v-img eager :src="post.photo" class="image" aspect-ratio="1.7"></v-img>
-          <div class="content d-flex flex-column justify-space-between">
-            <div class="content-wrapper">
-              <div class="user d-flex">
-                <v-avatar color="orange" class="avatar" size="50">
-                  <v-img :src="post.userPhoto"></v-img>
-                </v-avatar>
-                <div class="user-info d-flex flex-column">
-                  <span>{{ post.user }}</span>
-                </div>
-              </div>
-              <div class="text-wrapper">
-                <div class="card-title">
-                  {{ post.title }}
-                </div>
-                <div class="text">
-                  {{ post.subtitle }}
-                </div>
-              </div>
+      <div class="cards d-flex justify-start flex-direction-column">
+        <div class="card d-flex flex-grow-1" @click="$router.push(`/user/${user.id}`)" v-for="(user, i) in filteredUsers" :key="i">
+          <div class="profile">
+            <div class="d-flex align-center">
+              <v-avatar color="orange" style="margin: 20px" class="avatar" size="80">
+                <img :src="user.photo"/>
+              </v-avatar>
+              <div class="name">{{user.name}} {{user.fullName}}</div>
             </div>
-            <div style="font-weight: bold; margin-bottom: 26px">Saiba mais</div>
-          </div>
-          <v-divider></v-divider>
-          <div class="footer d-flex align-center">
-            <div style="font-family: Anaheim;font-size:9px;margin: 15px">{{ post.publishDate }}</div>
           </div>
         </div>
       </div>
-      <v-skeleton-loader
-        v-if="loading"
-        class="mx-auto"
-        width="300"
-        height="768"
-        loading
-        type="card-avatar, article, text"
-      >
-      </v-skeleton-loader>
     </div>
   </section>
 </template>
 
 <script>
-import { getAll } from '../api/post'
+import { getAll } from '../api/user'
   export default {
     data () {
       return {
-        posts: [],
-        search: '',
-        loading: true,
+        users: [],
+        search: ''
       }
     },
     async mounted () {
-      this.posts = await getAll()
-      this.loading = false
+      this.users = await getAll()
     },
     computed: {
-      filteredPosts () {
-        return this.posts.filter(x => Object.keys(x).some(key => String(x[key]).toUpperCase().includes(this.search.toUpperCase())))
+      filteredUsers () {
+        return this.users.filter(x => Object.keys(x).some(key => String(x[key]).toUpperCase().includes(this.search.toUpperCase())))
       }
     }
   }
@@ -119,10 +90,6 @@ import { getAll } from '../api/post'
     }
 
     .user {
-      .avatar {
-        transform: translateY(-50%);
-      }
-
       .user-info {
         margin: 10px;
         :first-child { margin-bottom: 4px; }
@@ -135,7 +102,7 @@ import { getAll } from '../api/post'
       padding: 0 26px;
       .text-wrapper {
         overflow-wrap: break-word;
-        .card-title {
+        .title {
           font-family: Amiko;
           font-style: normal;
           font-weight: normal;
@@ -156,7 +123,7 @@ import { getAll } from '../api/post'
     }
     .card {
       margin: 10px;
-      max-width: 320px !important;
+      max-width: initial !important;
       .text {
         max-height: 98px;
         text-overflow: ellipsis;

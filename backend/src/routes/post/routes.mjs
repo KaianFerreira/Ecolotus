@@ -64,7 +64,7 @@ router.get('/:id', async (req, res) => {
 })
 
 // Check if user exists
-router.post('/',  requireAuth('user'), upload.single('photo'), async (req, res) => {
+router.post('/',  requireAuth(), upload.single('photo'), async (req, res) => {
   try {
     console.log('POST /note')
     const schema = Joi.object().options({ abortEarly: false }).keys({
@@ -99,7 +99,7 @@ router.post('/',  requireAuth('user'), upload.single('photo'), async (req, res) 
   }
 })
 
-router.put('/:id', requireAuth('user'), upload.single('photo'), async (req, res) => {
+router.put('/:id', requireAuth(), upload.single('photo'), async (req, res) => {
   try {
     console.log('PUT /note/:id')
     // Validate request
@@ -133,8 +133,10 @@ router.put('/:id', requireAuth('user'), upload.single('photo'), async (req, res)
       body.value.subTitle,
       body.value.text
     )
-    
-    if (body.photo) {
+    console.log(process.env.API_DATA)
+    console.log(req.file)
+    console.log('here')
+    if (req.file) {
       uploadPhoto(req.file, note[0].id)
       await updatePhoto (req.file ? `${process.env.API_DATA}/posts/${note[0].id}/background.jpg` : null, note[0].id)
     }
@@ -145,7 +147,7 @@ router.put('/:id', requireAuth('user'), upload.single('photo'), async (req, res)
   }
 })
 
-router.delete('/:id', requireAuth('user'), async (req, res) => {
+router.delete('/:id', requireAuth(), async (req, res) => {
   try {
     console.log('DELETE /note/:id')
     const schema = Joi.object().keys({

@@ -1,6 +1,9 @@
 <template>
   <section class="container d-flex align-center flex-column">
-    <div class="card">
+    <div 
+      class="card"
+      v-if="!loading"
+    >
       <div class="image-upload" :class="{'disactivated' : !edit}" @click="changeImage">
         <v-img eager v-if="photo" :src="photo" class="image" aspect-ratio="1.7"></v-img>
         <div v-else class="image d-flex justify-center align-center" style="background: darkgray;">
@@ -71,38 +74,66 @@
         <div style="font-family: Anaheim;font-size:9px;margin: 15px">{{ publishDate }}</div>
       </div>
     </div>
-    <div class="actions grow align-self-end">
-      <div v-if="edit">
+    <div 
+      v-if="!loading"
+      class="d-flex justify-end"
+      style="width: 100%"
+    >
+      <div v-if="edit" class="d-flex justify-space-between">
         <v-btn
           color="secondary"
-          text
-          @click="cancel"
-        >
-          Cancelar
+          v-if="edit && id !== 'new'"
+          text @click="remove">
+          Remover
         </v-btn>
-        <v-btn
-          class="btn-primary"
-          @click="save"
-        >
-          Confirmar
-        </v-btn>
+        <div>
+          <v-btn
+            color="secondary"
+            text
+            v-if="edit"
+            @click="cancel"
+          >
+            Cancelar
+          </v-btn>
+          <v-btn
+            class="btn-primary"
+            @click="save"
+            v-if="edit"
+          >
+            Confirmar
+          </v-btn>
+        </div>
       </div>
-       <v-btn
-          v-else-if="owner"
+      <v-btn
+        color="secondary"
+        v-if="this.user.user === 1 && !edit && !owner"
+        text @click="remove">
+        Remover
+      </v-btn>
+      <v-btn
+          v-else-if="owner && !edit"
           class="btn-primary"
           @click="edit = true"
         >
           Alterar
         </v-btn>
     </div>
-    
+    <v-skeleton-loader
+      v-if="loading"
+      class="mx-auto"
+      width="700"
+      height="768"
+      loading
+      type="card-avatar, article, actions"
+    >
+    </v-skeleton-loader>
   </section>
 </template>
 
 <script>
 import { uploadImage } from '../tools'
 import { mapState } from 'vuex'
-import { get, create, update } from '../api/post'
+import { get, create, update, remove } from '../api/post'
 export default {
   props: ['id'],
   data () {
@@ -114,6 +145,7 @@ export default {
       title: '',
       text: '',
       subTitle: '',
+      loading: true,
       imageFile: '',
       owner: false,
       edit: false,
@@ -149,8 +181,10 @@ export default {
         if (data.error === 'Validation error') this.errors = data.fields
         else this.errors = 'Internal error'
       }
+      this.loading = false
     },
     async save () {
+      this.loading = true
       try {
         if (this.id === 'new') {
           await create (
@@ -175,10 +209,17 @@ export default {
         if (data.error === 'Validation error') this.errors = data.fields
         else this.errors = 'Internal error'
       }
+      this.loading = false
     },
     async cancel () {
       this.edit = false
       await this.getData()
+    },
+    async remove () {
+      this.loading = true
+      await remove(this.id)
+      this.$router.push('/post')
+      this.loading = false
     },
     changeImage () {
       if (this.edit) this.$refs.fileUpload.click()

@@ -32,11 +32,12 @@ const uploadPhoto = (file, id) => {
   }
 }
 
-router.get('/', requireAuth(), async (req, res) => {
+router.get('/', requireAuth('admin'), async (req, res) => {
   try {
     console.log('GET /user')
     // Validate request
     const users = await getAll()
+    console.log(users)
     res.send(users)
   } catch (error) {
     console.error(error)
@@ -107,7 +108,7 @@ router.post('/', upload.single('photo'), async (req, res) => {
   }
 })
 
-router.put('/:id', requireAuth('user'), upload.single('photo'), async (req, res) => {
+router.put('/:id', requireAuth(), upload.single('photo'), async (req, res) => {
   try {
     console.log('PUT /user')
     const schemaParams = Joi.object().options({ abortEarly: false}).keys({
@@ -149,11 +150,12 @@ router.put('/:id', requireAuth('user'), upload.single('photo'), async (req, res)
       body.value.active
     )
 
-    if (body.value.photo) {
-      uploadPhoto(req.file, user)
+    console.log('here')
+    console.log(process.env.API_DATA)
+    uploadPhoto(req.file, user)
+    if (req.file) {
       await updatePhoto (req.file ? `${process.env.API_DATA}/user/${user}/profile.jpg` : null, user)
     }
-
     res.send(true)
   } catch (error) {
     console.error(error)
@@ -161,7 +163,7 @@ router.put('/:id', requireAuth('user'), upload.single('photo'), async (req, res)
   }
 })
 
-router.delete('/:id', requireAuth(), async (req, res) => {
+router.delete('/:id', requireAuth('admin'), async (req, res) => {
   try {
     console.log('DELETE /user/:id')
 

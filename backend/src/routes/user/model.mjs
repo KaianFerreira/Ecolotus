@@ -11,6 +11,7 @@ const getAll = async (active = true ) => {
   return knex('user_details')
     .leftJoin('user', 'user.id', 'user_details.user')
     .where('user.active', active)
+    .andWhere('user.role', 'user')
     .select('user_details.*')
 }
 
@@ -79,6 +80,7 @@ const update = async (
       .where('id', userDetails[0].user).returning(['id', 'login', 'role', 'active'])
       return user[0].id
     } else {
+      console.log(userDetails)
       const user = await knex('user').transacting(trx).update({
         login,
         role: role,

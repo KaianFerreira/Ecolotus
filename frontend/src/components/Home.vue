@@ -28,7 +28,7 @@
 
       <v-list dense v-if="user">
         <v-list-item
-          v-for="item in items"
+          v-for="item in menuItens"
           :key="item.title"
           link
           @click="$router.push(item.path)"
@@ -63,29 +63,42 @@ import { mapState } from 'vuex'
             title: 'Home',
             icon: 'mdi-home',
             path: '/',
+            admin: false
           },
           {
             title: 'Perfil',
             icon: 'mdi-account-circle',
-            path: '/me/view'
+            path: '/me/view',
+            admin: false
           },
           {
             title: 'Criar publicação',
             icon: 'mdi-plus',
-            path: '/post/new'
+            path: '/post/new',
+            admin: false
+          },
+          {
+            title: 'Usuários',
+            icon: 'mdi-account-group',
+            path: '/user',
+            admin: true
           }
         ]
       }
     },
     computed: {
-      ...mapState(['user', 'loaded'])
+      ...mapState(['user', 'loaded']),
+      menuItens () {
+        if (this.user.id === 1) return this.items
+        else return this.items.filter(x => !x.admin)
+      }
     }
   }
 </script>
 <style lang="scss" scoped>
   .menu {
     position: fixed;
-    z-index: 1;
+    z-index: 2;
     padding: 0 16px;
     width: 100%;
     height: 70px;

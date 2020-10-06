@@ -28,6 +28,13 @@ exports.up = function(knex) {
       hash: 'i8Qh5AflwxaKboStBSc+oA==',
       role: 'admin'
     })
+  ])).then(() => Promise.all([
+    knex('user_details').insert({
+      user: 1,
+      name: 'Administrador',
+      full_name: ' ',
+      photo: 'https://randomuser.me/api/portraits/lego/1.jpg'
+    })
   ]))
 }
 

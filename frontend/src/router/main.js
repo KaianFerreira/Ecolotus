@@ -24,7 +24,18 @@ export default [
         name: 'User',
         component: () => import (/* webpackChunkName: "main" */ '../components/User.vue'),
         props: true
-      }
+      },
+      {
+        path: 'user/:id',
+        name: 'UserAdmin',
+        component: () => import (/* webpackChunkName: "main" */ '../components/User.vue'),
+        props: true
+      },
+      {
+        path: 'user',
+        name: 'users',
+        component: () => import(/* webpackChunkName: "main" */ '../components/Users.vue')
+      },
     ]
   }
 ]
