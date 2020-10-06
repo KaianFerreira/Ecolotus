@@ -257,7 +257,6 @@ import { signIn } from '../api/auth'
           this.registerNumber = data.registerNumber
         }
         if (this.id !== undefined) {
-          console.log('here')
           const data = await get(this.id)
           this.login = data.userLogin
           this.name = data.name

@@ -133,9 +133,6 @@ router.put('/:id', requireAuth(), upload.single('photo'), async (req, res) => {
       body.value.subTitle,
       body.value.text
     )
-    console.log(process.env.API_DATA)
-    console.log(req.file)
-    console.log('here')
     if (req.file) {
       uploadPhoto(req.file, note[0].id)
       await updatePhoto (req.file ? `${process.env.API_DATA}/posts/${note[0].id}/background.jpg` : null, note[0].id)

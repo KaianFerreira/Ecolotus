@@ -37,7 +37,6 @@ router.get('/', requireAuth('admin'), async (req, res) => {
     console.log('GET /user')
     // Validate request
     const users = await getAll()
-    console.log(users)
     res.send(users)
   } catch (error) {
     console.error(error)
@@ -150,8 +149,6 @@ router.put('/:id', requireAuth(), upload.single('photo'), async (req, res) => {
       body.value.active
     )
 
-    console.log('here')
-    console.log(process.env.API_DATA)
     uploadPhoto(req.file, user)
     if (req.file) {
       await updatePhoto (req.file ? `${process.env.API_DATA}/user/${user}/profile.jpg` : null, user)

@@ -80,7 +80,6 @@ const update = async (
       .where('id', userDetails[0].user).returning(['id', 'login', 'role', 'active'])
       return user[0].id
     } else {
-      console.log(userDetails)
       const user = await knex('user').transacting(trx).update({
         login,
         role: role,
