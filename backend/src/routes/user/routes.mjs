@@ -95,7 +95,7 @@ router.post('/', upload.single('photo'), async (req, res) => {
       value.active
     )
 
-    if (value.photo) {
+    if (req.file) {
       uploadPhoto(req.file, user)
       await updatePhoto (req.file ? `${process.env.API_DATA}/user/${user}/profile.jpg` : null, user)
     }

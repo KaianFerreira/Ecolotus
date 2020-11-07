@@ -7,7 +7,7 @@
       <div class="image-upload" :class="{'disactivated' : !edit}" @click="changeImage">
         <v-img eager v-if="photo" :src="photo" class="image" aspect-ratio="1.7"></v-img>
         <div v-else class="image d-flex justify-center align-center" style="background: darkgray;">
-          Clique para adicionar uma imagem
+          <span v-if="edit"> Clique para adicionar uma imagem </span>
         </div>
         <input v-show="false" ref="fileUpload" type="file" accept="image/jpeg" @change="uploadImage($event.target.files[0])">
       </div>
@@ -80,12 +80,6 @@
       style="width: 100%"
     >
       <div v-if="edit" class="d-flex justify-space-between">
-        <v-btn
-          color="secondary"
-          v-if="edit && id !== 'new'"
-          text @click="remove">
-          Remover
-        </v-btn>
         <div>
           <v-btn
             color="secondary"
@@ -106,12 +100,12 @@
       </div>
       <v-btn
         color="secondary"
-        v-if="this.user.user === 1 && !edit && !owner"
+        v-if="(this.user && this.user.user === 1 && !edit && !owner) || owner && !edit"
         text @click="remove">
         Remover
       </v-btn>
       <v-btn
-          v-else-if="owner && !edit"
+          v-if="owner && !edit"
           class="btn-primary"
           @click="edit = true"
         >
